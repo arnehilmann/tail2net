@@ -2,12 +2,9 @@
 -export([run/0]).
 
 -define(TCP_OPTIONS, [binary, {packet, line}, {active, false}, {reuseaddr, true}]).
-% TODO configurable
--define(PORT, 8081).
-% TODO configurable
--define(FILE2TAIL, "aha").
-% TODO configurable
--define(FILE_POLLINTERVALL, 1000).
+-define(PORT, tail2net_env:get_env(listen_port, 8081)).
+-define(FILE2TAIL, tail2net_env:get_env(file_to_tail, "/dev/random")).
+-define(FILE_POLLINTERVALL, tail2net_env:get_env(file_pollintervall, 1000)).
 
 run() ->
     register(filelistener, spawn_link(fun() -> open_file() end)),
@@ -19,8 +16,10 @@ run() ->
     end.
 
 open_file() ->
+    error_logger:info_report("trying to open", ?FILE2TAIL),
+    io:format("trying to open ~p\n", [?FILE2TAIL]),
     case file:open(?FILE2TAIL, [read, raw, read_ahead]) of
-        {ok, IoDevice} -> 
+        {ok, IoDevice} ->
             listen_on_file(IoDevice);
         {error, enoent} ->
             % TODO extract function, see line 44 also
