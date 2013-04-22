@@ -1,5 +1,6 @@
 .*.swp
 *.beam
+*.dump
 ebin
 rel/tail2net
 example
