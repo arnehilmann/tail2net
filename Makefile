@@ -17,3 +17,6 @@ generate:
 console:	node
 	rel/$(APPID)/bin/$(APPID) console
 
+clean:
+	rm -rf $(EBIN)/*
+	rm -rf rel/$(APPID)
