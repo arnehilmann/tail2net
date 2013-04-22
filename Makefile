@@ -20,3 +20,12 @@ console:	node
 clean:
 	rm -rf $(EBIN)/*
 	rm -rf rel/$(APPID)
+
+start:
+	rel/$(APPID)/bin/$(APPID) $@
+
+stop:
+	rel/$(APPID)/bin/$(APPID) $@
+
+attach:
+	rel/$(APPID)/bin/$(APPID) $@
