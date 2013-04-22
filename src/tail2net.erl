@@ -1,5 +1,6 @@
 -module(tail2net).
 -export([run/0]).
+-export([open_file/0]).
 
 -define(TCP_OPTIONS, [binary, {packet, line}, {active, false}, {reuseaddr, true}]).
 -define(PORT, tail2net_env:get_env(listen_port, 8081)).
@@ -15,6 +16,12 @@ run() ->
         _ -> ok
     end.
 
+poll(What) ->
+    receive
+    after ?FILE_POLLINTERVALL ->
+            What()
+    end.
+
 open_file() ->
     error_logger:info_report("trying to open", ?FILE2TAIL),
     io:format("trying to open ~p\n", [?FILE2TAIL]),
@@ -22,11 +29,7 @@ open_file() ->
         {ok, IoDevice} ->
             listen_on_file(IoDevice);
         {error, enoent} ->
-            % TODO extract function, see line 44 also
-            receive
-            after ?FILE_POLLINTERVALL ->
-                open_file()
-            end
+            poll(fun() -> open_file() end)
     end.
 
 listen_on_file(IoDevice) ->
@@ -36,10 +39,7 @@ listen_on_file(IoDevice) ->
             portlistener ! {broadcast, Data},
             listen_on_file(IoDevice);
         eof ->
-            receive
-            after ?FILE_POLLINTERVALL ->
-                listen_on_file(IoDevice)
-            end
+            poll(fun() -> listen_on_file(IoDevice) end)
     end.
 
 open_port() ->
