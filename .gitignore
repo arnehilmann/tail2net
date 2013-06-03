@@ -4,3 +4,4 @@
 ebin
 rel/tail2net
 example
+*.plt

@@ -11,8 +11,11 @@ node:	compile generate
 compile:
 	rebar compile
 
-generate:
+generate:	dialyze
 	rebar generate
+
+dialyze:
+	dialyzer --add_to_plt -r $(EBIN) --fullpath --output_plt $(APPID).plt
 
 console:	node
 	rel/$(APPID)/bin/$(APPID) console
@@ -20,6 +23,8 @@ console:	node
 clean:
 	rm -rf $(EBIN)/*
 	rm -rf rel/$(APPID)
+	rm -rf *.plt
+	rm -rf *.dump
 
 start:
 	rel/$(APPID)/bin/$(APPID) $@
@@ -29,3 +34,4 @@ stop:
 
 attach:
 	rel/$(APPID)/bin/$(APPID) $@
+
