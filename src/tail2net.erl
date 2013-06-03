@@ -83,7 +83,7 @@ loop(Sock) ->
             loop(Sock);
         {tcp, Socket, _Data} ->
             io:format("socket ~p: incoming communication, aborting connection!", [Socket]),
-            gen_tcp:closed(Socket),
+            gen_tcp:close(Socket),
             exit("incoming communication on write-only port!");
         {tcp_closed, Socket} ->
             io:format("Socket ~p closed\n", [Socket]);
