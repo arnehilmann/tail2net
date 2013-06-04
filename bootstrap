@@ -1,0 +1,24 @@
+#!/bin/bash
+set -u -e -E -C -o pipefail
+
+echo "bootstrapping build environment"
+
+if ! rebar -V; then
+    (
+        echo "installing rebar"
+        cd ..
+        git clone git://github.com/rebar/rebar.git
+        cd rebar
+        ./bootstrap
+        mkdir -p $HOME/bin
+        ln -sf $PWD/rebar $HOME/bin/rebar
+    )
+fi
+
+dialyzer -v
+if ! [[ -e $HOME/.dialyzer_plt ]]; then
+    echo "initializing plt for dialyzer (this may take 5-10 minutes)"
+    dialyzer --build_plt --apps erts kernel stdlib mnesia
+fi
+
+echo "done."
